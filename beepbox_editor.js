@@ -68,8 +68,10 @@ var beepbox = (function (exports) {
         { name: "B", isWhiteKey: true, basePitch: 23 },
     ]);
     Config.blackKeyNameParents = [-1, 1, -1, 1, -1, 1, -1, -1, 1, -1, 1, -1];
-    Config.tempoMin = 30;
-    Config.tempoMax = 320;
+    Config.tempoMin = 1;
+    Config.tempoMax = 1000;
+// faster tempo - both todbox and dogebox adds this
+// I need to change the slider so it also follows this new tempo
     Config.echoDelayRange = 24;
     Config.echoDelayStepTicks = 4;
     Config.echoSustainRange = 8;
@@ -80,22 +82,33 @@ var beepbox = (function (exports) {
     Config.reverbRange = 32;
     Config.reverbDelayBufferSize = 16384;
     Config.reverbDelayBufferMask = Config.reverbDelayBufferSize - 1;
-    Config.beatsPerBarMin = 2;
-    Config.beatsPerBarMax = 16;
+    Config.beatsPerBarMin = 1;
+    Config.beatsPerBarMax = 32;
+	// more beats per bar - both todbox and dogebox add this
+	// maybe make it even more limitless
     Config.barCountMin = 1;
-    Config.barCountMax = 256;
+    Config.barCountMax = 1024;
+// faster bar count - from todbox
     Config.instrumentCountMin = 1;
-    Config.layeredInstrumentCountMax = 4;
-    Config.patternInstrumentCountMax = 10;
+    Config.layeredInstrumentCountMax = 8;
+    Config.patternInstrumentCountMax = 12;
+// more instruments, inspired/from dogebox
     Config.partsPerBeat = 24;
     Config.ticksPerPart = 2;
+	// currently unchanged because of lag, might change later
     Config.ticksPerArpeggio = 3;
     Config.arpeggioPatterns = [[0], [0, 1], [0, 1, 2, 1], [0, 1, 2, 3], [0, 1, 2, 3, 4], [0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4, 5, 6, 7]];
     Config.rhythms = toNameMap([
+	    { name: "÷0 (what)", stepsPerBeat: 0, ticksPerArpeggio: 7, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1]], roundUpThresholds: [] },
+		{ name: "÷1 (singleuratiries)", stepsPerBeat: 1, ticksPerArpeggio: 6, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1]], roundUpThresholds: [3] },
+		{ name: "÷2 (secondaries)", stepsPerBeat: 2, ticksPerArpeggio: 5, arpeggioPatterns: [[0], [0, 0, 1, 1], [0, 1, 2, 1]], roundUpThresholds: [3, 9] },
+	    // these ones are from dogebox - might change to resemble todbox/nerdbox
         { name: "÷3 (triplets)", stepsPerBeat: 3, roundUpThresholds: [5, 12, 18] },
         { name: "÷4 (standard)", stepsPerBeat: 4, roundUpThresholds: [3, 9, 17, 21] },
         { name: "÷6", stepsPerBeat: 6, roundUpThresholds: null },
         { name: "÷8", stepsPerBeat: 8, roundUpThresholds: null },
+	    { name: "÷16", stepsPerBeat: 16, ticksPerArpeggio: 3, arpeggioPatterns: [[0], [0, 1], [0, 1, 2, 1]], roundUpThresholds: null },
+	    // dogebox
         { name: "freehand", stepsPerBeat: 24, roundUpThresholds: null },
     ]);
     Config.instrumentTypeNames = ["chip", "FM", "noise", "spectrum", "drumset", "harmonics", "PWM", "Picked String", "custom chip", "mod", "FM6op"];
@@ -171,6 +184,7 @@ var beepbox = (function (exports) {
         { name: "continue", isSeamless: true, continues: true, slides: false, slideTicks: 3, includeAdjacentPatterns: true },
         { name: "slide", isSeamless: true, continues: false, slides: true, slideTicks: 3, includeAdjacentPatterns: true },
         { name: "slide in pattern", isSeamless: true, continues: false, slides: true, slideTicks: 3, includeAdjacentPatterns: false }
+	    // re-add old ones?
     ]);
     Config.vibratos = toNameMap([
         { name: "none", amplitude: 0.0, type: 0, delayTicks: 0 },
@@ -301,6 +315,12 @@ var beepbox = (function (exports) {
         { name: "16×", mult: 16.0, hzOffset: 0.0, amplitudeSign: 1.0 },
         { name: "18×", mult: 18.0, hzOffset: 0.0, amplitudeSign: 1.0 },
         { name: "20×", mult: 20.0, hzOffset: 0.0, amplitudeSign: 1.0 },
+	{ name: "~20×", mult: 20.0, hzOffset: -5.0, amplitudeSign: -1.0 },
+	    // dogebox (maybe another mod also adds this? I got it from dogebox)
+	{ name: "50×", mult: 50.0, hzOffset: 0.0, amplitudeSign: 1.0 },
+	    // dogebox
+	{ name: "100×", mult: 100.0, hzOffset: 0.0, amplitudeSign: 1.0 }
+	    // dogebox
     ]);
     Config.envelopes = toNameMap([
         { name: "none", type: 1, speed: 0.0 },
